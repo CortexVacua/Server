@@ -7,6 +7,7 @@ import ch.uzh.ifi.seal.soprafs20.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(@Qualifier("userRepository") UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -37,7 +38,7 @@ public class UserService {
 
     public User createUser(User newUser) {
         newUser.setToken(UUID.randomUUID().toString());
-        newUser.setStatus(UserStatus.ONLINE);
+        newUser.setStatus(UserStatus.OFFLINE);
 
         checkIfUserExists(newUser);
 
@@ -49,27 +50,25 @@ public class UserService {
         return newUser;
     }
 
+    public void loginUser(String username, String password){
+
+    }
+
     /**
      * This is a helper method that will check the uniqueness criteria of the username and the name
      * defined in the User entity. The method will do nothing if the input is unique and throw an error otherwise.
      *
      * @param userToBeCreated
      * @throws SopraServiceException
-     * @see ch.uzh.ifi.seal.soprafs20.entity.User
+     * @see User
      */
     private void checkIfUserExists(User userToBeCreated) {
         User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
-        User userByName = userRepository.findByName(userToBeCreated.getName());
 
         String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
-        if (userByUsername != null && userByName != null) {
-            throw new SopraServiceException(String.format(baseErrorMessage, "username and the name", "are"));
-        }
-        else if (userByUsername != null) {
+        if (userByUsername != null) {
             throw new SopraServiceException(String.format(baseErrorMessage, "username", "is"));
         }
-        else if (userByName != null) {
-            throw new SopraServiceException(String.format(baseErrorMessage, "name", "is"));
-        }
+
     }
 }
