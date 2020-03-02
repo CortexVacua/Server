@@ -2,15 +2,19 @@ package ch.uzh.ifi.seal.soprafs20.service;
 
 import ch.uzh.ifi.seal.soprafs20.constant.UserStatus;
 import ch.uzh.ifi.seal.soprafs20.entity.User;
-import ch.uzh.ifi.seal.soprafs20.exceptions.SopraServiceException;
+import ch.uzh.ifi.seal.soprafs20.exceptions.*;
 import ch.uzh.ifi.seal.soprafs20.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,8 +43,11 @@ public class UserService {
     public User createUser(User newUser) {
         newUser.setToken(UUID.randomUUID().toString());
         newUser.setStatus(UserStatus.OFFLINE);
+        newUser.setAccountCreationDate(new Date());
 
         checkIfUserExists(newUser);
+
+        if (newUser.getPassword().equals("")||newUser.getUsername().equals("")) throw new IllegalRegistrationInput("Username and/or password can't consist of an empty string!");
 
         // saves the given entity but data is only persisted in the database once flush() is called
         newUser = userRepository.save(newUser);
@@ -50,9 +57,22 @@ public class UserService {
         return newUser;
     }
 
-    public void loginUser(String username, String password){
+    public User loginUser(User potUser){
+        User user= userRepository.findByUsername(potUser.getUsername());
+        if (user==null) throw new UserCredentialsWrong(String.format("No user with this username exists."));
+        else if (user.getPassword().equals(potUser.getPassword())) {
+            if (user.getStatus().equals(UserStatus.OFFLINE)) {
+                user.setStatus(UserStatus.ONLINE);
+                return user;
+            }
+            else throw new UserAlreadyLoggedIn();
+        }
+        else throw new UserCredentialsWrong(String.format("Incorrect password."));
+
 
     }
+
+
 
     /**
      * This is a helper method that will check the uniqueness criteria of the username and the name
@@ -67,7 +87,7 @@ public class UserService {
 
         String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
         if (userByUsername != null) {
-            throw new SopraServiceException(String.format(baseErrorMessage, "username", "is"));
+            throw new UsernameAlreadyExists(String.format(baseErrorMessage, "username", "is"));
         }
 
     }

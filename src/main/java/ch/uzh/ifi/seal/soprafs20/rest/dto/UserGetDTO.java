@@ -2,11 +2,22 @@ package ch.uzh.ifi.seal.soprafs20.rest.dto;
 
 import ch.uzh.ifi.seal.soprafs20.constant.UserStatus;
 
+import java.util.Date;
+
 public class UserGetDTO {
 
     private Long id;
     private String username;
     private UserStatus status;
+    private Date accountCreationDate;
+
+    public Date getAccountCreationDate() {
+        return accountCreationDate;
+    }
+
+    public void setAccountCreationDate(Date accountCreationDate) {
+        this.accountCreationDate = accountCreationDate;
+    }
 
     public Long getId() {
         return id;

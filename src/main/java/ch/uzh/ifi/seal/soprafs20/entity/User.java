@@ -1,9 +1,11 @@
 package ch.uzh.ifi.seal.soprafs20.entity;
 
 import ch.uzh.ifi.seal.soprafs20.constant.UserStatus;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Internal User Representation
@@ -21,6 +23,10 @@ public class User implements Serializable {
 	@Id
 	@GeneratedValue
 	private Long id;
+
+	@Column
+    private Date accountCreationDate;
+
 	
 	@Column(nullable = false, unique = true)
 	private String username;
@@ -33,6 +39,10 @@ public class User implements Serializable {
 
 	@Column(nullable = false)
     private String password;
+
+	public Date getAccountCreationDate(){ return accountCreationDate;}
+
+	public void setAccountCreationDate(Date date) {this.accountCreationDate = date;}
 
 	public Long getId() {
 		return id;
