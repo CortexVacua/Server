@@ -24,10 +24,12 @@ public class User implements Serializable {
 	@GeneratedValue
 	private Long id;
 
-	@Column
-    private Date accountCreationDate;
+	@Column(nullable = false)
+    private Long accountCreationDate;
 
-	
+    @Column
+    private Date birthday;
+
 	@Column(nullable = false, unique = true)
 	private String username;
 	
@@ -40,9 +42,13 @@ public class User implements Serializable {
 	@Column(nullable = false)
     private String password;
 
-	public Date getAccountCreationDate(){ return accountCreationDate;}
+	public Long getAccountCreationDate(){ return accountCreationDate;}
 
-	public void setAccountCreationDate(Date date) {this.accountCreationDate = date;}
+	public void setAccountCreationDate(Long date) {this.accountCreationDate = date;}
+
+    public Date getBirthday(){ return birthday;}
+
+    public void setBirthday(Date date) {this.birthday = date;}
 
 	public Long getId() {
 		return id;

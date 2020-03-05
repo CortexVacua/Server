@@ -4,6 +4,8 @@ import ch.uzh.ifi.seal.soprafs20.constant.UserStatus;
 import ch.uzh.ifi.seal.soprafs20.entity.User;
 import ch.uzh.ifi.seal.soprafs20.exceptions.*;
 import ch.uzh.ifi.seal.soprafs20.repository.UserRepository;
+import ch.uzh.ifi.seal.soprafs20.rest.dto.UserGetDTO;
+import ch.uzh.ifi.seal.soprafs20.rest.dto.UserPutUserIdDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -43,7 +46,8 @@ public class UserService {
     public User createUser(User newUser) {
         newUser.setToken(UUID.randomUUID().toString());
         newUser.setStatus(UserStatus.OFFLINE);
-        newUser.setAccountCreationDate(new Date());
+        newUser.setAccountCreationDate((new Date()).getTime());
+        newUser.setBirthday(null);
 
         checkIfUserExists(newUser);
 
@@ -70,6 +74,23 @@ public class UserService {
         else throw new UserCredentialsWrong(String.format("Incorrect password."));
 
 
+    }
+
+    public User getUser (User userInput){
+        Optional<User> userOp =this.userRepository.findById(userInput.getId());
+        if (userOp.isEmpty()) throw new SopraServiceException("Test");
+        return userOp.get();
+
+    }
+
+    public void updateUser (User user, String userId){
+        Optional<User> userOp =this.userRepository.findById(Long.parseLong(userId));
+        if (userOp.isEmpty()) throw new UserNotAvailable("No user with specified ID exists.");
+        else if (userOp.get().getToken().equals(user.getToken())) {
+            if (user.getUsername()!=null) userOp.get().setUsername(user.getUsername());
+            if (user.getBirthday() !=null) userOp.get().setBirthday(user.getBirthday());
+        }
+        else throw new UserCredentialsWrong("You are not authorized to change this user, since tokens do not match.");
     }
 
 

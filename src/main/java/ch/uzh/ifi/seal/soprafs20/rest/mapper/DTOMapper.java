@@ -1,9 +1,7 @@
 package ch.uzh.ifi.seal.soprafs20.rest.mapper;
 
 import ch.uzh.ifi.seal.soprafs20.entity.User;
-import ch.uzh.ifi.seal.soprafs20.rest.dto.UserGetDTO;
-import ch.uzh.ifi.seal.soprafs20.rest.dto.UserPostDTO;
-import ch.uzh.ifi.seal.soprafs20.rest.dto.UserPutDTO;
+import ch.uzh.ifi.seal.soprafs20.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -28,11 +26,23 @@ public interface DTOMapper {
     @Mapping(source = "username", target = "username")
     @Mapping(source = "status", target = "status")
     @Mapping(source= "accountCreationDate", target = "accountCreationDate")
+    @Mapping(source= "birthday", target = "birthday")
     UserGetDTO convertEntityToUserGetDTO(User user);
 
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password")
-    User convertUserPutDTOtoEntity(UserPutDTO UserPutDTO);
+    User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
+
+    @Mapping(source = "userId", target = "id")
+    User convertUserIdStringToEntity(String userId);
+
+    @Mapping(source = "token", target = "token")
+    @Mapping(source = "id", target = "id")
+    UserTokenDTO convertEntityToUserTokenDTO(User user);
+
+    @Mapping(source = "token", target = "token")
+    @Mapping(source = "username", target = "username")
+    User convertUserPutUserIdDTOToEntity(UserPutUserIdDTO userPutUserIdDTO);
 
 
 
