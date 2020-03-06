@@ -46,7 +46,7 @@ public class UserService {
     public User createUser(User newUser) {
         newUser.setToken(UUID.randomUUID().toString());
         newUser.setStatus(UserStatus.OFFLINE);
-        newUser.setAccountCreationDate((new Date()).getTime());
+        newUser.setAccountCreationDate(new Date());
         newUser.setBirthday(null);
 
         checkIfUserExists(newUser);
@@ -87,7 +87,11 @@ public class UserService {
         Optional<User> userOp =this.userRepository.findById(Long.parseLong(userId));
         if (userOp.isEmpty()) throw new UserNotAvailable("No user with specified ID exists.");
         else if (userOp.get().getToken().equals(user.getToken())) {
-            if (user.getUsername()!=null) userOp.get().setUsername(user.getUsername());
+            if (user.getUsername()!=null) {
+                if (user.getUsername().equals(userOp.get().getUsername()));
+                else if (this.userRepository.findByUsername(user.getUsername())!=null) throw new UsernameAlreadyExists("Username is already in use!");
+                else userOp.get().setUsername(user.getUsername());
+            }
             if (user.getBirthday() !=null) userOp.get().setBirthday(user.getBirthday());
         }
         else throw new UserCredentialsWrong("You are not authorized to change this user, since tokens do not match.");

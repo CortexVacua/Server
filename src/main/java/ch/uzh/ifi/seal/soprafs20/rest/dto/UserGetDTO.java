@@ -9,14 +9,14 @@ public class UserGetDTO {
     private Long id;
     private String username;
     private UserStatus status;
-    private Long accountCreationDate;
+    private Date accountCreationDate;
     private Date birthday;
 
-    public Long getAccountCreationDate() {
+    public Date getAccountCreationDate() {
         return accountCreationDate;
     }
 
-    public void setAccountCreationDate(Long accountCreationDate) {
+    public void setAccountCreationDate(Date accountCreationDate) {
         this.accountCreationDate = accountCreationDate;
     }
 
