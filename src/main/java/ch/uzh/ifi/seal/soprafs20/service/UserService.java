@@ -78,7 +78,7 @@ public class UserService {
 
     public User getUser (User userInput){
         Optional<User> userOp =this.userRepository.findById(userInput.getId());
-        if (userOp.isEmpty()) throw new SopraServiceException("Test");
+        if (userOp.isEmpty()) throw new UserNotAvailable("No user with this id exists, that can be fetched.");
         return userOp.get();
 
     }
