@@ -1,7 +1,6 @@
 package ch.uzh.ifi.seal.soprafs20.entity;
 
 import ch.uzh.ifi.seal.soprafs20.constant.UserStatus;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;

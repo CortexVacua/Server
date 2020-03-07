@@ -26,12 +26,12 @@ public class GlobalExceptionAdvice extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
 
-//    @ExceptionHandler(SopraServiceException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public SopraServiceException handleBadRequestException(SopraServiceException ex) {
-//        log.error(String.format("SopraServiceException raised:%s", ex));
-//        return ex;
-//    }
+    @ExceptionHandler(SopraServiceException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public SopraServiceException handleBadRequestException(SopraServiceException ex) {
+        log.error(String.format("SopraServiceException raised:%s", ex));
+        return ex;
+    }
 
     @ExceptionHandler(TransactionSystemException.class)
     @ResponseStatus(HttpStatus.CONFLICT)

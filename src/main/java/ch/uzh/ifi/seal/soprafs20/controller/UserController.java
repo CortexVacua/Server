@@ -77,4 +77,12 @@ public class UserController {
        userService.updateUser(DTOMapper.INSTANCE.convertUserPutUserIdDTOToEntity(userPutUserIdDTO), userId);
 
     }
+
+    @PutMapping("/logout")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void logoutUser(@RequestBody UserTokenDTO userTokenDTO){
+        User userInput =DTOMapper.INSTANCE.convertUserTokenDTOToEntity(userTokenDTO);
+        userService.logOutUser(userInput) ;
+    }
 }

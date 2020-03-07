@@ -4,17 +4,12 @@ import ch.uzh.ifi.seal.soprafs20.constant.UserStatus;
 import ch.uzh.ifi.seal.soprafs20.entity.User;
 import ch.uzh.ifi.seal.soprafs20.exceptions.*;
 import ch.uzh.ifi.seal.soprafs20.repository.UserRepository;
-import ch.uzh.ifi.seal.soprafs20.rest.dto.UserGetDTO;
-import ch.uzh.ifi.seal.soprafs20.rest.dto.UserPutUserIdDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.Date;
 import java.util.List;
@@ -72,8 +67,15 @@ public class UserService {
             else throw new UserAlreadyLoggedIn();
         }
         else throw new UserCredentialsWrong(String.format("Incorrect password."));
+    }
 
-
+    public void logOutUser(User userInput){
+        User user= userRepository.findByToken(userInput.getToken());
+        if (user==null) throw new UserNotAvailable("No user with same token as your session exists.");
+        else if (user.getStatus().equals(UserStatus.ONLINE)) {
+            user.setStatus(UserStatus.OFFLINE);
+        }
+        else throw new UserAlreadyLoggedOut();
     }
 
     public User getUser (User userInput){
@@ -104,7 +106,7 @@ public class UserService {
      * defined in the User entity. The method will do nothing if the input is unique and throw an error otherwise.
      *
      * @param userToBeCreated
-     * @throws SopraServiceException
+     * @throws UsernameAlreadyExists
      * @see User
      */
     private void checkIfUserExists(User userToBeCreated) {
