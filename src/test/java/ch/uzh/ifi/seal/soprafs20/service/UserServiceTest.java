@@ -3,6 +3,7 @@ package ch.uzh.ifi.seal.soprafs20.service;
 import ch.uzh.ifi.seal.soprafs20.constant.UserStatus;
 import ch.uzh.ifi.seal.soprafs20.entity.User;
 import ch.uzh.ifi.seal.soprafs20.exceptions.SopraServiceException;
+import ch.uzh.ifi.seal.soprafs20.exceptions.UsernameAlreadyExists;
 import ch.uzh.ifi.seal.soprafs20.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,8 @@ public class UserServiceTest {
         testUser = new User();
         testUser.setId(1L);
         testUser.setUsername("testUsername");
+        testUser.setPassword("testPassword");
+        testUser.setStatus(UserStatus.OFFLINE);
 
         // when -> any object is being save in the userRepository -> return the dummy testUser
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(testUser);
@@ -38,44 +41,32 @@ public class UserServiceTest {
 
     @Test
     public void createUser_validInputs_success() {
-        // when -> any object is being save in the userRepository -> return the dummy testUser
-//        User createdUser = userService.createUser(testUser);
-//
-//        // then
-//        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any());
-//
-//        assertEquals(testUser.getId(), createdUser.getId());
-//        assertEquals(testUser.getUsername(), createdUser.getUsername());
-//        assertNotNull(createdUser.getToken());
-//        assertEquals(UserStatus.ONLINE, createdUser.getStatus());
+//         when -> any object is being saved in the userRepository -> return the dummy testUser
+        User createdUser = userService.createUser(testUser);
+
+        // then
+        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any());
+
+        assertEquals(testUser.getId(), createdUser.getId());
+        assertEquals(testUser.getUsername(), createdUser.getUsername());
+        assertNotNull(createdUser.getToken());
+        assertEquals(UserStatus.OFFLINE, createdUser.getStatus());
     }
 
-    @Test
-    public void createUser_duplicateName_throwsException() {
-//        // given -> a first user has already been created
-//        userService.createUser(testUser);
-//
-//        // when -> setup additional mocks for UserRepository
-//        Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(null);
-//
-//        // then -> attempt to create second user with same user -> check that an error is thrown
-//        String exceptionMessage = "The name provided is not unique. Therefore, the user could not be created!";
-//        SopraServiceException exception = assertThrows(SopraServiceException.class, () -> userService.createUser(testUser), exceptionMessage);
-//        assertEquals(exceptionMessage, exception.getMessage());
-    }
+
 
     @Test
     public void createUser_duplicateInputs_throwsException() {
-//        // given -> a first user has already been created
-//        userService.createUser(testUser);
-//
-//        // when -> setup additional mocks for UserRepository
-//        Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
-//
-//        // then -> attempt to create second user with same user -> check that an error is thrown
-//        String exceptionMessage = "The username and the name provided are not unique. Therefore, the user could not be created!";
-//        SopraServiceException exception = assertThrows(SopraServiceException.class, () -> userService.createUser(testUser), exceptionMessage);
-//        assertEquals(exceptionMessage, exception.getMessage());
+        // given -> a first user has already been created
+        userService.createUser(testUser);
+
+        // when -> setup additional mocks for UserRepository
+        Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
+
+        // then -> attempt to create second user with same user -> check that an error is thrown
+        String exceptionMessage = "The username provided is not unique. Therefore, the user could not be created!";
+        UsernameAlreadyExists exception = assertThrows(UsernameAlreadyExists.class, () -> userService.createUser(testUser), exceptionMessage);
+        assertEquals(exceptionMessage, exception.getMessage());
     }
 
 
